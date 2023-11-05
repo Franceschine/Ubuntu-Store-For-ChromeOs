@@ -1,9 +1,9 @@
 #!/bin/bash
 echo "Ubuntu store installer for crostini (13 functions)"
 echo "1 download files"
-sudo wget https://raw.githubusercontent.com/Franceschinie/Ubuntu-Store-For-ChromeOs/main/cros.list
-sudo wget https://raw.githubusercontent.com/Franceschinie/Ubuntu-Store-For-ChromeOs/main/cros-upgrade
-sudo wget https://raw.githubusercontent.com/Franceschinie/Ubuntu-Store-For-ChromeOs/main/ScriptService.service
+sudo wget https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/cros.list
+sudo wget https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/cros-upgrade
+sudo wget https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/ScriptService.service
 echo "2 starting and upgrading package manager"
 sudo apt update
 sudo NEEDRESTART_MODE=a apt upgrade -y
