@@ -12,7 +12,7 @@ now you can see
 (termina) chronos@localhost ~ $ 
 now type and wait the ubuntu install
 ```ruby
-curl -s https://raw.githubusercontent.com/Franceschinie/Ubuntu-Store-For-ChromeOs/main/1.sh | bash -s
+curl -s https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/1.sh | bash -s
 ```
 start container
 ```ruby
@@ -20,6 +20,6 @@ lxc exec penguin -- bash
 ```
 now type and wait the installation of integrated ChromeOs apps
 ```ruby
-curl -s https://raw.githubusercontent.com/Franceschinie/Ubuntu-Store-For-ChromeOs/main/2.sh | bash -s
+curl -s https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/2.sh | bash -s
 ```
 reboot system 
