@@ -34,6 +34,10 @@ echo "4/5"
 sudo NEEDRESTART_MODE=a apt install mesa-vdpau-drivers -y
 echo "5/5"
 sudo NEEDRESTART_MODE=a apt install mesa-vulkan-drivers -y
+echo "6/6 container support"
+sudo NEEDRESTART_MODE=a apt install libgl1-mesa-dri -y
+echo "7/7 cursor support"
+sudo NEEDRESTART_MODE=a apt install adwaita-icon-theme-full
 echo "10 install apps"
 echo "1/20"
 sudo NEEDRESTART_MODE=a apt install ./cros-adapta_*_all.deb -y
@@ -79,6 +83,17 @@ echo "20/20"
 sudo NEEDRESTART_MODE=a apt install ./cros-xdg-desktop-portal_*_all.deb -y
 echo "11 install gui store"
 sudo NEEDRESTART_MODE=a apt install ./gnome-software_*_amd64.deb -y
+echo "copy files and user"
+sudo mkdir -p /opt/google/cros-containers/bin/sommelier
+sudo mkdir -p /opt/google/cros-containers/lib/
+sudo cp /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so /opt/google/cros-containers/lib/
+sudo sed -i '1cpenguin' /etc/hostname
+killall -u ubuntu
+groupmod -n linux ubuntu
+usermod -md /home/linux -l linux ubuntu
+usermod -aG users linux
+loginctl enable-linger linux
+sed -i 's/ubuntu/linux/' /etc/sudoers.d/90-cloud-init-users
 echo "13 cleanup and reboot container"
 sudo rm -rf /root/*
 sudo reboot
