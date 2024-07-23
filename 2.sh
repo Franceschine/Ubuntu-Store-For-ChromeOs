@@ -2,8 +2,6 @@
 echo "Ubuntu store installer for crostini (13 functions)"
 echo "1 download files"
 sudo wget https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/cros.list
-sudo wget https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/cros-upgrade
-sudo wget https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/ScriptService.service
 echo "2 starting and upgrading package manager"
 sudo apt update
 sudo NEEDRESTART_MODE=a apt upgrade -y
@@ -81,12 +79,6 @@ echo "20/20"
 sudo NEEDRESTART_MODE=a apt install ./cros-xdg-desktop-portal_*_all.deb -y
 echo "11 install gui store"
 sudo NEEDRESTART_MODE=a apt install ./gnome-software_*_amd64.deb -y
-echo "12 install binary"
-sudo cp -f cros-upgrade /bin/
-chmod a+x /bin/cros-upgrade
-sudo cp -f ScriptService.service /etc/systemd/system/
-chmod 644 /etc/systemd/system/ScriptService.service
-systemctl enable ScriptService.service
 echo "13 cleanup and reboot container"
 sudo rm -rf /root/*
 sudo reboot
