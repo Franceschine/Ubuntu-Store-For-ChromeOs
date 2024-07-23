@@ -1,8 +1,0 @@
-[Unit]
-Description=ChromeOs Integration
- 
-[Service]
-ExecStart=/bin/cros-upgrade
- 
-[Install]
-WantedBy=default.target
