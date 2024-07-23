@@ -1,0 +1,77 @@
+#!/bin/bash -e
+export LC_ALL=C
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Sanity check
+[ "${UID}" = 0 ] || { echo "Must be run as root user"; exit 1; }
+
+# Clean up when we are done
+rc=1
+tmp="/tmp/update-cros.$$"
+trap 'cd /tmp
+      rm -rf "${tmp}"
+      trap "" EXIT
+      [ -z "${rc}" ] || { echo; echo FAILED; }
+      exit $rc' EXIT INT HUP QUIT TERM ERR
+mkdir -p "${tmp}/download"
+chown _apt:root "${tmp}/download" 2>/dev/null || :
+cd "${tmp}"
+
+# Source the most recent version of the Crostini software
+inst=
+echo "deb https://storage.googleapis.com/cros-packages/$(</dev/.cros_milestone) bookworm main" >/etc/apt/sources.list.d/cros.list
+for k in 78BD65473CB3BD13 4EB27DB2A3B88B8B; do
+  [ -n "$(apt-key list "${k}" 2>/dev/null)" ] ||
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "${k}"
+done
+apt update
+
+# Fix cros-im to depend on the version of qtbase-abi that ships with libqt5core5a
+version="$(apt-cache policy cros-im |
+           sed '/-crosubuntu/d;s/.*\s\+\(\S\+\)\s\+[0-9]\+$/\1/;t;d' |
+           sort -n | tail -n1)"
+if ! apt install cros-im="${version}"; then
+  (cd download; apt download cros-im="${version}" libqt5core5a)
+  dpkg-query -l libqt5core5a | grep -q '^ii' ||
+    dpkg -i download/libqt5core5a*.deb
+  dpkg-deb -e download/libqt5core5a*.deb qt
+  provides="$(sed 's/^Provides: \(qtbase-abi[-0-9]\+\).*/\1/;t;d' qt/control)"
+  [ -n "${provides}" ] && {
+    dpkg-deb -R download/cros-im*.deb im
+    sed -i "s/qtbase-abi[-0-9]\+/${provides}/g;/^Version/s/$/-crosubuntu/" \
+        im/DEBIAN/control
+    dpkg-deb -b im cros-im.deb
+    inst="./cros-im.deb"
+  }
+fi
+
+# Fix cros-pipe-config to depend on available version of pipewire
+version="$(apt-cache policy cros-pipe-config |
+           sed '/-crosubuntu/d;s/.*\s\+\(\S\+\)\s\+[0-9]\+$/\1/;t;d' |
+           sort -n | tail -n1)"
+(cd download; apt download cros-pipe-config="${version}" pipewire)
+dpkg-query -l pipewire | grep -q '^ii' || dpkg -i download/pipewire*.deb
+dpkg-deb -e download/pipewire*.deb pw
+provides="$(sed 's/^Version: \(.*\)/\1/;t;d' pw/control)"
+[ -n "${provides}" ] && {
+  dpkg-deb -R download/cros-pipe-config*.deb pc
+  sed -i "s/\(pipewire [(<>= ]\+\)[-.0-9]\+/\1${provides}/g;s/pipewire-alsa, //;/^Version/s/$/-crosubuntu/" pc/DEBIAN/control
+  dpkg-deb -b pc cros-pc.deb
+  inst="${inst} ./cros-pc.deb wireplumber"
+}
+
+# Fix cros-ui-config to remove unneeded gtk-3.0 settings
+version="$(apt-cache policy cros-ui-config |
+           sed '/-crosubuntu/d;s/.*\s\+\(\S\+\)\s\+[0-9]\+$/\1/;t;d' |
+           sort -n | tail -n1)"
+(cd download; apt download cros-ui-config="${version}")
+dpkg-deb -R download/cros-ui-config*.deb ui
+rm -f ui/etc/gtk-3.0/settings.ini
+sed -i "/^Version/s/$/-crosubuntu/" ui/DEBIAN/control
+sed -i '/[/]etc[/]gtk-3.0[/]settings.ini/d;/^\s*$/d' ui/DEBIAN/conffiles
+dpkg-deb -b ui cros-ui-config.deb
+inst="${inst} ./cros-ui-config.deb"
+
+# Install Crostini software
+apt -y --allow-downgrades install ${inst} cros-guest-tools adwaita-icon-theme-full
+rc=
