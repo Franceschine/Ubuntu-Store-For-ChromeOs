@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Ubuntu store installer for crostini (60 commands)"
+echo "Ubuntu store installer for crostini (49 commands)"
 echo "1" && sudo wget https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/cros.list
 echo "2" && sudo wget https://raw.githubusercontent.com/Franceschine/Ubuntu-Store-For-ChromeOs/main/update-cros
 echo "3" && sudo apt update
@@ -46,23 +46,6 @@ echo "43" && sudo NEEDRESTART_MODE=a apt install ./cros-tast-tests_*_all.deb -y
 echo "44" && sudo NEEDRESTART_MODE=a apt install ./cros-sftp_*_all.deb -y
 echo "45" && sudo NEEDRESTART_MODE=a apt install ./cros-xdg-desktop-portal_*_all.deb -y
 echo "46" && sudo NEEDRESTART_MODE=a apt install ./gnome-software_*_amd64.deb -y
-echo "47" && sudo mkdir -p /opt/google/cros-containers/bin/sommelier
-echo "48" && sudo mkdir -p /opt/google/cros-containers/lib/
-echo "49" && sudo cp /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so /opt/google/cros-containers/lib/
-echo "50" && sudo sed -i '1cpenguin' /etc/hostname
-echo "51" && killall -u ubuntu
-echo "52" && groupmod -n linux ubuntu
-echo "53" && usermod -md /home/linux -l linux ubuntu
-echo "54" && usermod -aG users linux
-echo "55" && loginctl enable-linger linux
-echo "56" && sed -i 's/ubuntu/linux/' /etc/sudoers.d/90-cloud-init-users
-echo "57" && rmdir ~/Downloads
-echo "58" && ln -sf /mnt/chromeos/MyFiles ~
-echo "59" && sudo update-alternatives --set x-www-browser /usr/bin/garcon-url-handler
-echo "60" && sudo update-alternatives --set www-browser /usr/bin/garcon-url-handler
-echo "61" && sudo xdg-mime default garcon_host_browser.desktop x-scheme-handler/http
-echo "62" && sudo xdg-mime default garcon_host_browser.desktop x-scheme-handler/https
-echo "63" && sudo xdg-mime default garcon_host_browser.desktop text/html
-echo "64" && sudo cp update-cros /usr/local/sbin
-echo "65" && sudo rm -rf /root/*
-echo "66" && sudo reboot
+echo "47" && ln -sf /mnt/chromeos/MyFiles ~
+echo "48" && sudo rm -rf /root/*
+echo "49" && sudo reboot
